@@ -1,0 +1,62 @@
+﻿const express = require('express')
+const router = express.Router()
+const fs = require('fs-extra')
+const path = require('path')
+const auth = require('../middleware/auth')
+
+const COLLECTIONS_FILE = path.join(__dirname, '..', 'models', 'collections.json')
+
+async function readCollections(){ try { return await fs.readJson(COLLECTIONS_FILE) } catch(e){ return {} } }
+async function writeCollections(obj){ await fs.outputJson(COLLECTIONS_FILE, obj, { spaces: 2 }) }
+
+router.get('/', auth, async (req, res) => {
+  const collections = await readCollections()
+  const userId = req.user.id
+  const cards = collections[userId] || []
+  res.json({ cards })
+})
+
+router.post('/', auth, async (req, res) => {
+  const collections = await readCollections()
+  const userId = req.user.id
+  const cards = collections[userId] || []
+  const card = {
+    id: Date.now().toString(),
+    name: req.body.name || 'Unknown',
+    set: req.body.set || '',
+    lang: req.body.lang || 'EN',
+    rarity: req.body.rarity || '',
+    value: Number(req.body.value || 0),
+    createdAt: new Date().toISOString()
+  }
+  cards.unshift(card)
+  collections[userId] = cards
+  await writeCollections(collections)
+  res.json({ card })
+})
+
+router.put('/:id', auth, async (req, res) => {
+  const collections = await readCollections()
+  const userId = req.user.id
+  const cards = collections[userId] || []
+  const idx = cards.findIndex(c => c.id === req.params.id)
+  if(idx === -1) return res.status(404).json({ error: 'Carta no encontrada' })
+  const updated = Object.assign(cards[idx], req.body)
+  cards[idx] = updated
+  collections[userId] = cards
+  await writeCollections(collections)
+  res.json({ card: updated })
+})
+
+router.delete('/:id', auth, async (req, res) => {
+  const collections = await readCollections()
+  const userId = req.user.id
+  const cards = collections[userId] || []
+  const filtered = cards.filter(c => c.id !== req.params.id)
+  collections[userId] = filtered
+  await writeCollections(collections)
+  res.json({ ok: true })
+})
+
+module.exports = router
+

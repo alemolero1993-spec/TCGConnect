@@ -1,0 +1,70 @@
+﻿import React, { useEffect, useState } from "react";
+
+const DEV_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFsZW1vIiwiZW1haWwiOiJhbGVtb0BleGFtcGxlLmNvbSIsImlhdCI6MTc2Mjg3MDA4NCwiZXhwIjoxNzYzNDc0ODg0fQ.Sw16UBg8WzjDYaZF6vkIjotseMkO5HSaMqx1xBVUXlg";
+
+export default function HomePage(){
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function loadCards(){
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("token") || DEV_TOKEN;
+      try{
+        const res = await fetch("http://localhost:5000/api/collection", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const body = await res.json();
+        if(!res.ok){
+          setError(body.error || JSON.stringify(body));
+          setCards([]);
+        } else {
+          setCards(body.cards || []);
+        }
+      } catch(e){
+        setError(e.message || "Error desconocido");
+        setCards([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadCards();
+  }, []);
+
+  return (
+    <main style={{ padding: 20, fontFamily: "system-ui, sans-serif" }}>
+      <h1>Mi colección — TCGConnect</h1>
+
+      {loading && <p>Cargando cartas…</p>}
+
+      {error && (
+        <div style={{ background: "#fee", padding: 12, borderRadius: 8 }}>
+          <strong>Error:</strong> {String(error)}
+        </div>
+      )}
+
+      {!loading && !error && cards.length === 0 && (
+        <p>No hay cartas en la colección.</p>
+      )}
+
+      {!loading && cards.length > 0 && (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {cards.map(card => (
+            <li key={card.id} style={{ marginBottom: 12, padding: 12, border: "1px solid #eee", borderRadius: 8 }}>
+              <div style={{ fontWeight: 700 }}>{card.name}</div>
+              <div style={{ fontSize: 13, color: "#444" }}>{card.set} — {card.lang} — {card.rarity}</div>
+              <div style={{ marginTop: 6 }}>Valor: €{Number(card.value || 0)}</div>
+              <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>Creada: {card.createdAt}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}

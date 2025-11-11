@@ -20,5 +20,25 @@
       "value": 150,
       "createdAt": "2025-11-11T14:08:19.062Z"
     }
+  ],
+  "dev": [
+    {
+      "id": "1762884330407",
+      "name": "pikachu",
+      "set": "pokemon go",
+      "lang": "EN",
+      "rarity": "Common",
+      "value": 10,
+      "createdAt": "2025-11-11T18:05:30.407Z"
+    },
+    {
+      "id": "1762883942505",
+      "name": "pikachu",
+      "set": "pokemon go",
+      "lang": "EN",
+      "rarity": "Common",
+      "value": 1,
+      "createdAt": "2025-11-11T17:59:02.505Z"
+    }
   ]
 }

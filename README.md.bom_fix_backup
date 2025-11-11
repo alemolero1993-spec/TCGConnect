@@ -1,0 +1,13 @@
+﻿TCGConnect â€” Full Stack Prototype
+Quick start:
+1) Backend:
+   cd tcgconnect\server
+   npm install
+   copy .env.example .env
+   node server.js
+2) Frontend:
+   cd tcgconnect\client
+   npm install
+   echo "VITE_API_BASE=http://localhost:5000" > .env
+   npm run dev
+
