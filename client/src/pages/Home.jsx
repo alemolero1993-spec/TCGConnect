@@ -3,16 +3,28 @@ import React, { useEffect, useState } from "react";
 import { API_URL, DEV_TOKEN } from "../config";
 
 /**
- * HomePage - Lista, crear, editar y borrar cartas
- * Usa el endpoint local: /api/collection
+ * HomePage con login simple:
+ * - Si existe POST /api/auth/login lo usa (envía { username, password } y espera { token }).
+ * - Si no existe, permite pegar un token manualmente (campo "Token manual").
+ * - Guarda token en localStorage bajo "token" y recarga.
+ *
+ * Mantiene CRUD sobre /api/collection (colecciones).
  */
 
 const apiBase = () => API_URL.replace(/\/$/, "") + "/collection";
+const authBase = () => API_URL.replace(/\/$/, "") + "/auth";
 
 export default function HomePage() {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Auth / login
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [manualToken, setManualToken] = useState("");
+  const [loggedAs, setLoggedAs] = useState(null);
+  const [authBusy, setAuthBusy] = useState(false);
 
   // formulario para crear nuevas cartas
   const [form, setForm] = useState({
@@ -24,9 +36,20 @@ export default function HomePage() {
   });
   const [saving, setSaving] = useState(false);
 
-  // edición inline
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+
+  useEffect(() => {
+    // detectar token existente al montar
+    const t = (localStorage.getItem("token") || DEV_TOKEN || "").trim();
+    if (t) {
+      // intentar decodificar nombre simple (no obligatorio) — si tu backend devuelve info, podríamos solicitar /api/auth/me
+      setLoggedAs("autenticado");
+    }
+    // cargar cartas
+    loadCards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getTokenIfAny = () => (localStorage.getItem("token") || DEV_TOKEN || "").trim();
 
@@ -47,7 +70,6 @@ export default function HomePage() {
       }
 
       const data = await res.json();
-      // router devuelve { cards: [...] }
       const list = Array.isArray(data) ? data : data.cards || [];
       setCards(list);
     } catch (e) {
@@ -59,11 +81,66 @@ export default function HomePage() {
     }
   };
 
-  useEffect(() => {
-    loadCards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // --- Auth: intentar login mediante backend (/api/auth/login) ---
+  const doLogin = async () => {
+    setAuthBusy(true);
+    setError(null);
+    try {
+      // intenta login vía endpoint /api/auth/login
+      const res = await fetch(`${authBase()}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
+      if (res.status === 404) {
+        // No existe el endpoint: usa token manual
+        throw new Error("NO_AUTH_ENDPOINT");
+      }
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`HTTP ${res.status} - ${txt}`);
+      }
+
+      const data = await res.json();
+      const token = data.token || data.accessToken || "";
+      if (!token) throw new Error("Login no devolvió token");
+      localStorage.setItem("token", token);
+      setLoggedAs(username || "user");
+      // recargar para que el resto use el token
+      location.reload();
+    } catch (err) {
+      if (err.message === "NO_AUTH_ENDPOINT") {
+        // Señalamos al usuario que no hay endpoint y sugerimos token manual
+        setError("El backend no expone /api/auth/login — usa 'Token manual' para pegar un token.");
+      } else {
+        setError(String(err.message || err));
+      }
+      console.error("Login error:", err);
+    } finally {
+      setAuthBusy(false);
+    }
+  };
+
+  // --- Guardar token manualmente ---
+  const saveManualToken = () => {
+    if (!manualToken || manualToken.trim().length < 10) {
+      alert("Pega un token válido en el campo.");
+      return;
+    }
+    localStorage.setItem("token", manualToken.trim());
+    setLoggedAs("manual");
+    location.reload();
+  };
+
+  const doLogout = () => {
+    localStorage.removeItem("token");
+    setLoggedAs(null);
+    location.reload();
+  };
+
+  // --- CRUD cartas (igual que antes) ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -99,10 +176,9 @@ export default function HomePage() {
         const txt = await res.text();
         throw new Error(`HTTP ${res.status} - ${txt}`);
       }
-      const { card, card: createdCard } = await res.json();
-      // algunos endpoints devuelven { card } u objeto directo; manejar ambos
-      const newCard = card || createdCard || (await res.json());
-      setCards((c) => [card || createdCard || newCard, ...c]);
+      const body = await res.json();
+      const newCard = body.card || body;
+      setCards((c) => [newCard, ...c]);
       setForm({ name: "", set: "", lang: "EN", rarity: "Common", value: "" });
     } catch (err) {
       console.error("Error creando carta:", err);
@@ -113,7 +189,7 @@ export default function HomePage() {
     }
   };
 
-  // --- Editar ---
+  // Edit / Delete (igual que antes)
   const startEdit = (card) => {
     setEditingId(card.id);
     setEditForm({
@@ -154,8 +230,9 @@ export default function HomePage() {
         const txt = await res.text();
         throw new Error(`HTTP ${res.status} - ${txt}`);
       }
-      const { card: updated } = await res.json();
-      setCards((prev) => prev.map((c) => (c.id === id ? (updated || { ...c, ...editForm }) : c)));
+      const body = await res.json();
+      const updated = body.card || body;
+      setCards((prev) => prev.map((c) => (c.id === id ? updated : c)));
       cancelEdit();
     } catch (err) {
       console.error("Error editando carta:", err);
@@ -164,7 +241,6 @@ export default function HomePage() {
     }
   };
 
-  // --- Borrar ---
   const handleDelete = async (id) => {
     if (!confirm("¿Borrar esta carta? Esta acción no tiene deshacer.")) return;
     try {
@@ -190,7 +266,27 @@ export default function HomePage() {
 
   return (
     <main style={{ padding: 20, fontFamily: "system-ui, sans-serif", maxWidth: 900, margin: "0 auto" }}>
-      <h1>Mi colección — TCGConnect</h1>
+      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <h1 style={{ margin: 0 }}>Mi colección — TCGConnect</h1>
+        <div>
+          {getTokenIfAny() ? (
+            <>
+              <span style={{ marginRight: 12 }}>🔒 Conectado</span>
+              <button onClick={doLogout}>Logout</button>
+            </>
+          ) : (
+            <div style={{ display: "flex", gap: 8 }}>
+              <input placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} />
+              <input placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
+              <button onClick={doLogin} disabled={authBusy}>{authBusy ? "Iniciando..." : "Login"}</button>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 8 }}>
+                <input placeholder="Token manual" value={manualToken} onChange={(e) => setManualToken(e.target.value)} style={{ width: 220 }} />
+                <button onClick={saveManualToken}>Usar token</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
 
       {loading && <p>Cargando cartas…</p>}
 
