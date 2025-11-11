@@ -1,4 +1,4 @@
-﻿# 🧠 Proyecto TCGConnect
+# 🧠 Proyecto TCGConnect
 
 Plataforma full-stack para coleccionistas TCG (Trading Card Games).  
 Permite gestionar colecciones, comparar precios de tiendas y conectar con otros usuarios para intercambio o venta.

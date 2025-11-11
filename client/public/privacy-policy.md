@@ -1,4 +1,4 @@
-﻿# PolÃ­tica de Privacidad â€” TCGConnect
+# PolÃ­tica de Privacidad â€” TCGConnect
 
 **Ãšltima actualizaciÃ³n:** 11 de noviembre de 2025
 

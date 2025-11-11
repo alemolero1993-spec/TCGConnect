@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const DEV_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFsZW1vIiwiZW1haWwiOiJhbGVtb0BleGFtcGxlLmNvbSIsImlhdCI6MTc2Mjg3MDA4NCwiZXhwIjoxNzYzNDc0ODg0fQ.Sw16UBg8WzjDYaZF6vkIjotseMkO5HSaMqx1xBVUXlg";
 

@@ -1,5 +1,12 @@
-﻿{
-    "devDependencies":  {
-                            "concurrently":  "^9.2.1"
-                        }
+{
+  "name": "tcgconnect",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run start-dev --prefix server\"",
+    "start": "npm run start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

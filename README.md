@@ -1,4 +1,4 @@
-﻿TCGConnect â€” Full Stack Prototype
+TCGConnect â€” Full Stack Prototype
 Quick start:
 1) Backend:
    cd tcgconnect\server

@@ -1,0 +1,9 @@
+﻿# Ignorar backups y ficheros temporales de limpieza BOM
+client_backups_temp/
+*.bom_backup*
+*.bom_final_backup*
+*.bom_clean_backup*
+*.bom_fix_backup*
+
+# node_modules (por si no está)
+node_modules/
