@@ -1,0 +1,28 @@
+﻿# ===============================
+#     GIT ATTRIBUTES — TCGConnect
+# ===============================
+
+# Asegurar codificación UTF-8 y EOL tipo LF en todos los textos
+* text=auto eol=lf working-tree-encoding=UTF-8
+
+# Forzar UTF-8 en archivos específicos
+*.js text eol=lf working-tree-encoding=UTF-8
+*.jsx text eol=lf working-tree-encoding=UTF-8
+*.json text eol=lf working-tree-encoding=UTF-8
+*.md text eol=lf working-tree-encoding=UTF-8
+*.html text eol=lf working-tree-encoding=UTF-8
+*.css text eol=lf working-tree-encoding=UTF-8
+
+# Mantener binarios intactos
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.webp binary
+*.zip binary
+
+# Evitar normalización en backups
+*.bom_backup* -text
+*.bom_fix_backup* -text
+*.bom_clean_backup* -text
+*.bom_final_backup* -text
