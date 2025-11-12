@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
-import { API_URL } from '../../config'; // usa la config ya forzada
+﻿// client/src/pages/Login.jsx (fixed for build)
+import React, { useState } from 'react';
+import { API_URL } from '../../config';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -14,37 +15,29 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(/api/auth/login, {
+      const res = await fetch(\\/api/auth/login\, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
 
       const txt = await res.text();
-      if (!res.ok) throw new Error(: );
+      if (!res.ok) {
+        // lanzar error con código y cuerpo para debugging
+        throw new Error(\\: \\);
+      }
 
       const data = JSON.parse(txt);
-      // Aquí guardamos el token en localStorage.token (principal)
-      // y también mantenemos compatibility con localStorage.usuario (si usabas user JSON antes).
+
       if (data.token) {
-        try {
-          localStorage.setItem('token', data.token); // ********* token principal *********
-        } catch (err) {
-          console.warn('No se pudo guardar localStorage.token:', err);
-        }
+        try { localStorage.setItem('token', data.token); } catch (err) { console.warn('Could not store token', err); }
       }
 
-      // Mantener compatibilidad con 'usuario' si viene user en la respuesta
       if (data.user) {
-        try {
-          localStorage.setItem('usuario', JSON.stringify(data.user));
-        } catch (err) {
-          console.warn('No se pudo guardar localStorage.usuario:', err);
-        }
+        try { localStorage.setItem('usuario', JSON.stringify(data.user)); } catch (err) { console.warn('Could not store usuario', err); }
       }
 
-      // Recarga para que la app use el nuevo token inmediatamente
-      // (alternativa: navegar a / con state para evitar recarga, pero recarga asegura re-hidratar todo)
+      // refrescar para que la app re-lee el token
       window.location.reload();
     } catch (err) {
       console.error('Login error:', err);
@@ -76,5 +69,3 @@ export default function Login() {
     </div>
   );
 }
-
-
