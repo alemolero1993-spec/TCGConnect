@@ -1,17 +1,78 @@
-import React from 'react';
+﻿import React, { useState } from 'react';
+import { API_URL } from '../../config'; // usa la config ya forzada
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  function fakeLogin(e) { e.preventDefault(); navigate('/'); }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(\\/api/auth/login\, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const txt = await res.text();
+      if (!res.ok) throw new Error(\\: \\);
+
+      const data = JSON.parse(txt);
+      // Aquí guardamos el token en localStorage.token (principal)
+      // y también mantenemos compatibility con localStorage.usuario (si usabas user JSON antes).
+      if (data.token) {
+        try {
+          localStorage.setItem('token', data.token); // ********* token principal *********
+        } catch (err) {
+          console.warn('No se pudo guardar localStorage.token:', err);
+        }
+      }
+
+      // Mantener compatibilidad con 'usuario' si viene user en la respuesta
+      if (data.user) {
+        try {
+          localStorage.setItem('usuario', JSON.stringify(data.user));
+        } catch (err) {
+          console.warn('No se pudo guardar localStorage.usuario:', err);
+        }
+      }
+
+      // Recarga para que la app use el nuevo token inmediatamente
+      // (alternativa: navegar a / con state para evitar recarga, pero recarga asegura re-hidratar todo)
+      window.location.reload();
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'Error en login');
+      setLoading(false);
+    }
+  }
+
   return (
-    <main className='p-6'>
-      <h2 className='text-xl font-semibold'>Login (prueba)</h2>
-      <form onSubmit={fakeLogin} className='mt-4 flex flex-col gap-2'>
-        <input placeholder='email' className='border p-2' />
-        <input placeholder='password' type='password' className='border p-2' />
-        <button className='mt-2 bg-indigo-600 text-white px-4 py-2 rounded'>Entrar</button>
+    <div style={{ maxWidth: 520, margin: '24px auto', padding: 12 }}>
+      <h2>Login</h2>
+      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: 8 }}>
+          <label style={{ display: 'block', marginBottom: 4 }}>Email</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%', padding: 8 }} />
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', marginBottom: 4 }}>Contraseña</label>
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%', padding: 8 }} />
+        </div>
+        <button type="submit" disabled={loading} style={{ padding: '10px 16px' }}>
+          {loading ? 'Iniciando...' : 'Login'}
+        </button>
       </form>
-    </main>
+      <p style={{ marginTop: 12, color: '#666' }}>
+        Nota: el JWT se guardará en <code>localStorage.token</code> y se mantiene compatibilidad con <code>localStorage.usuario</code>.
+      </p>
+    </div>
   );
 }
