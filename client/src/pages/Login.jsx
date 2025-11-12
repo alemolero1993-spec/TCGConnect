@@ -35,7 +35,7 @@ export default function Login() {
         try { localStorage.setItem("usuario", JSON.stringify(data.user)); } catch (err) { console.warn("Could not store usuario", err); }
       }
 
-      window.location.reload();
+      navigate("/coleccion");
     } catch (err) {
       console.error("Login error:", err);
       setError(err.message || "Error en login");
@@ -66,6 +66,7 @@ export default function Login() {
     </div>
   );
 }
+
 
 
 
