@@ -14,14 +14,14 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(\/api/auth/login\, {
+      const res = await fetch(/api/auth/login, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
 
       const txt = await res.text();
-      if (!res.ok) throw new Error(\\: \\);
+      if (!res.ok) throw new Error(: );
 
       const data = JSON.parse(txt);
       // Aquí guardamos el token en localStorage.token (principal)
@@ -76,4 +76,5 @@ export default function Login() {
     </div>
   );
 }
+
 
