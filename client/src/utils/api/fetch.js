@@ -1,25 +1,45 @@
-﻿// client/src/utils/api/fetch.js
-import { API_URL } from '../config';
+﻿import { API_URL } from "../../config";
 
 export async function apiFetch(endpoint, options = {}) {
-  const storedToken = localStorage.getItem('token') || localStorage.getItem('usuario') || import.meta.env.VITE_DEV_TOKEN || '';
+  let storedToken = "";
+  try {
+    storedToken = localStorage.getItem("token") || "";
+    if (!storedToken) {
+      const usuarioRaw = localStorage.getItem("usuario") || "";
+      if (usuarioRaw) {
+        try {
+          const parsed = JSON.parse(usuarioRaw);
+          if (parsed && typeof parsed === "object" && parsed.token) {
+            storedToken = parsed.token;
+          } else {
+            storedToken = "";
+          }
+        } catch (e) {
+          storedToken = usuarioRaw;
+        }
+      }
+    }
+    if (!storedToken) storedToken = import.meta.env.VITE_DEV_TOKEN || "";
+  } catch {
+    storedToken = import.meta.env.VITE_DEV_TOKEN || "";
+  }
+
   const headers = {
     ...(options.headers || {}),
-    'Content-Type': 'application/json',
-    ...(storedToken ? { 'Authorization': `Bearer ${storedToken}` } : {})
+    "Content-Type": "application/json",
+    ...(storedToken ? { Authorization: `Bearer ${storedToken}` } : {}),
   };
-  const base = API_URL ? API_URL.replace(/\/+$/,'') : '';
-  const url = `${base}/api/${endpoint.replace(/^\/+/,'')}`;
+
+  const base = API_URL ? API_URL.replace(/\/+$/, "") : "";
+  const url = `${base}/api/${endpoint.replace(/^\/+/, "")}`;
 
   const resp = await fetch(url, { ...options, headers });
 
   if (resp.status === 401) {
-    // token inválido/no autorizado → limpiamos y llevamos a login
-    try { localStorage.removeItem('token'); } catch(e){/* ignore */ }
-    try { localStorage.removeItem('usuario'); } catch(e){/* ignore */ }
-    // redirigir a login (si estás en SPA puedes usar navigate)
-    window.location.href = '/login';
-    throw new Error('401: Token inválido o no autorizado');
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "/login";
+    throw new Error("401: Token inválido o no autorizado");
   }
 
   if (!resp.ok) {
@@ -28,4 +48,3 @@ export async function apiFetch(endpoint, options = {}) {
   }
   return resp.json();
 }
-

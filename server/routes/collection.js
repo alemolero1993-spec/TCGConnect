@@ -1,61 +1,86 @@
-const express = require('express')
-const router = express.Router()
-const fs = require('fs-extra')
-const path = require('path')
-const auth = require('../middleware/auth')
+﻿const express = require("express");
+const router = express.Router();
+const Database = require("better-sqlite3");
+const db = new Database("tcgconnect.db");
 
-const COLLECTIONS_FILE = path.join(__dirname, '..', 'models', 'collections.json')
+// Helpers
+const getCollectionsByUser = (userId) => db.prepare("SELECT * FROM collections WHERE user_id = ?").all(userId);
+const getCollectionById = (id) => db.prepare("SELECT * FROM collections WHERE id = ?").get(id);
+const insertCollection = (c) => db.prepare("INSERT OR REPLACE INTO collections (id,user_id,name,language,rarity,condition,value,created_at,raw) VALUES (?,?,?,?,?,?,?,?,?)").run(c.id,c.user_id,c.name,c.language,c.rarity,c.condition,c.value,c.created_at,c.raw);
+const deleteCollectionById = (id) => db.prepare("DELETE FROM collections WHERE id = ?").run(id);
 
-async function readCollections(){ try { return await fs.readJson(COLLECTIONS_FILE) } catch(e){ return {} } }
-async function writeCollections(obj){ await fs.outputJson(COLLECTIONS_FILE, obj, { spaces: 2 }) }
-
-router.get('/', auth, async (req, res) => {
-  const collections = await readCollections()
-  const userId = req.user.id
-  const cards = collections[userId] || []
-  res.json({ cards })
-})
-
-router.post('/', auth, async (req, res) => {
-  const collections = await readCollections()
-  const userId = req.user.id
-  const cards = collections[userId] || []
-  const card = {
-    id: Date.now().toString(),
-    name: req.body.name || 'Unknown',
-    set: req.body.set || '',
-    lang: req.body.lang || 'EN',
-    rarity: req.body.rarity || '',
-    value: Number(req.body.value || 0),
-    createdAt: new Date().toISOString()
+/**
+ * GET /api/collection?userId=...
+ * Lista colecciones de un usuario
+ */
+router.get("/", (req, res) => {
+  try {
+    const userId = req.query.userId;
+    if (!userId) return res.status(400).json({ error: "Falta userId en query" });
+    const rows = getCollectionsByUser(userId);
+    return res.json({ ok: true, collections: rows });
+  } catch (err) {
+    console.error("Error GET /api/collection", err && err.stack ? err.stack : err);
+    return res.status(500).json({ error: "Error interno" });
   }
-  cards.unshift(card)
-  collections[userId] = cards
-  await writeCollections(collections)
-  res.json({ card })
-})
+});
 
-router.put('/:id', auth, async (req, res) => {
-  const collections = await readCollections()
-  const userId = req.user.id
-  const cards = collections[userId] || []
-  const idx = cards.findIndex(c => c.id === req.params.id)
-  if(idx === -1) return res.status(404).json({ error: 'Carta no encontrada' })
-  const updated = Object.assign(cards[idx], req.body)
-  cards[idx] = updated
-  collections[userId] = cards
-  await writeCollections(collections)
-  res.json({ card: updated })
-})
+/**
+ * GET /api/collection/:id
+ * Obtener colección por id
+ */
+router.get("/:id", (req, res) => {
+  try {
+    const id = req.params.id;
+    const row = getCollectionById(id);
+    if (!row) return res.status(404).json({ error: "No encontrado" });
+    return res.json({ ok: true, collection: row });
+  } catch (err) {
+    console.error("Error GET /api/collection/:id", err && err.stack ? err.stack : err);
+    return res.status(500).json({ error: "Error interno" });
+  }
+});
 
-router.delete('/:id', auth, async (req, res) => {
-  const collections = await readCollections()
-  const userId = req.user.id
-  const cards = collections[userId] || []
-  const filtered = cards.filter(c => c.id !== req.params.id)
-  collections[userId] = filtered
-  await writeCollections(collections)
-  res.json({ ok: true })
-})
+/**
+ * POST /api/collection
+ * Body: { id, user_id, name, language, rarity, condition, value, created_at, raw }
+ */
+router.post("/", (req, res) => {
+  try {
+    const body = req.body;
+    if (!body || !body.user_id) return res.status(400).json({ error: "Faltan campos: user_id" });
+    const id = body.id || (Date.now().toString());
+    const record = {
+      id,
+      user_id: body.user_id,
+      name: body.name || "",
+      language: body.language || "",
+      rarity: body.rarity || "",
+      condition: body.condition || "",
+      value: body.value !== undefined && body.value !== null ? parseFloat(body.value) : null,
+      created_at: body.created_at || new Date().toISOString(),
+      raw: body.raw ? JSON.stringify(body.raw) : JSON.stringify(body)
+    };
+    insertCollection(record);
+    return res.status(201).json({ ok: true, id });
+  } catch (err) {
+    console.error("Error POST /api/collection", err && err.stack ? err.stack : err);
+    return res.status(500).json({ error: "Error interno" });
+  }
+});
 
-module.exports = router
+/**
+ * DELETE /api/collection/:id
+ */
+router.delete("/:id", (req, res) => {
+  try {
+    const id = req.params.id;
+    deleteCollectionById(id);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("Error DELETE /api/collection/:id", err && err.stack ? err.stack : err);
+    return res.status(500).json({ error: "Error interno" });
+  }
+});
+
+module.exports = router;

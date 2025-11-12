@@ -1,41 +1,70 @@
-const express = require('express')
-const router = express.Router()
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const fs = require('fs-extra')
-const path = require('path')
+﻿const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Database = require('better-sqlite3');
+const db = new Database('tcgconnect.db');
 
-const USERS_FILE = path.join(__dirname, '..', 'models', 'users.json')
-const JWT_SECRET = process.env.JWT_SECRET || 'changeme'
-const TOKEN_EXPIRES = '7d'
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret';
+const JWT_EXPIRES = '7d';
 
-async function readUsers(){ try { return await fs.readJson(USERS_FILE) } catch(e){ return [] } }
-async function writeUsers(u){ await fs.outputJson(USERS_FILE, u, { spaces: 2 }) }
+const getUserByEmail = (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+const insertUser = (u) => db.prepare('INSERT OR IGNORE INTO users (id,email,name,password) VALUES (?,?,?,?)').run(u.id,u.email,u.name,u.password);
 
+const router = express.Router();
+
+/**
+ * POST /api/auth/register
+ * Body: { id, email, name, password }
+ */
 router.post('/register', async (req, res) => {
-  const { email, password, name } = req.body
-  if(!email || !password) return res.status(400).json({ error: 'Email y password requeridos' })
-  const users = await readUsers()
-  if(users.find(u => u.email === email)) return res.status(409).json({ error: 'Usuario ya existe' })
-  const hash = await bcrypt.hash(password, 10)
-  const user = { id: Date.now().toString(), email, name: name || '', password: hash }
-  users.push(user)
-  await writeUsers(users)
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES })
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name } })
-})
+  try {
+    const { id, email, name, password } = req.body;
+    if (!id || !email || !name || !password) return res.status(400).json({ error: 'Faltan campos' });
 
+    const existing = getUserByEmail(email);
+    if (existing) return res.status(409).json({ error: 'Usuario ya existe' });
+
+    const hashed = await bcrypt.hash(password, 10);
+    const user = { id, email, name, password: hashed };
+    insertUser(user);
+
+    const { password: _pw, ...safe } = user;
+
+    // generar token
+    const token = jwt.sign({ id: safe.id, email: safe.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+
+    return res.status(201).json({ ok: true, user: safe, token });
+  } catch (err) {
+    console.error('Error en /api/auth/register', err && err.stack ? err.stack : err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+/**
+ * POST /api/auth/login
+ * Body: { email, password }
+ */
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body
-  if(!email || !password) return res.status(400).json({ error: 'Email y password requeridos' })
-  const users = await readUsers()
-  const user = users.find(u => u.email === email)
-  if(!user) return res.status(401).json({ error: 'Credenciales invÃ¡lidas' })
-  const ok = await bcrypt.compare(password, user.password)
-  if(!ok) return res.status(401).json({ error: 'Credenciales invÃ¡lidas' })
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES })
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name } })
-})
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Faltan campos' });
 
-module.exports = router
+    const user = getUserByEmail(email);
+    if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
 
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return res.status(401).json({ error: 'Credenciales inválidas' });
+
+    const { password: _pw, ...safe } = user;
+
+    // generar token JWT
+    const token = jwt.sign({ id: safe.id, email: safe.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+
+    return res.json({ ok: true, user: safe, token });
+  } catch (err) {
+    console.error('Error en /api/auth/login', err && err.stack ? err.stack : err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+module.exports = router;

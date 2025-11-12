@@ -1,7 +1,7 @@
-import React from "react";
+﻿import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
-import HomePageMock from "./pages/Home";
+import HomePageMock from "\.\/Home";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import CollectionPage from "./pages/Collection";
@@ -21,3 +21,5 @@ export default function App() {
     </Router>
   );
 }
+
+

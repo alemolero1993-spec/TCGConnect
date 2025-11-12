@@ -1,0 +1,14 @@
+[
+    {
+        "id":  "1762865095667",
+        "email":  "demo@tcgconnect.com",
+        "name":  "Demo",
+        "password":  "$2a$10$1yRscDsVl.W27b1ot..P2Oz640fQBnUEVNAdlWMEakUmEE.M8QgD2"
+    },
+    {
+        "id":  "alemo",
+        "email":  "alemo@example.com",
+        "name":  "Alemo",
+        "password":  "$2a$10$1yRscDsVl.W27b1ot..P2Oz640fQBnUEVNAdlWMEakUmEE.M8QgD2"
+    }
+]

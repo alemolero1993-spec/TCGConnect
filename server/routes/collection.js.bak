@@ -1,4 +1,4 @@
-﻿const express = require('express')
+const express = require('express')
 const router = express.Router()
 const fs = require('fs-extra')
 const path = require('path')
@@ -9,14 +9,14 @@ const COLLECTIONS_FILE = path.join(__dirname, '..', 'models', 'collections.json'
 async function readCollections(){ try { return await fs.readJson(COLLECTIONS_FILE) } catch(e){ return {} } }
 async function writeCollections(obj){ await fs.outputJson(COLLECTIONS_FILE, obj, { spaces: 2 }) }
 
-router.('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   const collections = await readCollections()
   const userId = req.user.id
   const cards = collections[userId] || []
   res.json({ cards })
 })
 
-router.('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const collections = await readCollections()
   const userId = req.user.id
   const cards = collections[userId] || []
@@ -59,5 +59,3 @@ router.delete('/:id', auth, async (req, res) => {
 })
 
 module.exports = router
-
-
