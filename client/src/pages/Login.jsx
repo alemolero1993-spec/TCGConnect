@@ -1,5 +1,5 @@
 ﻿import React, { useState } from "react";
-import { API_URL } from "../../config";
+import { API_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -66,3 +66,4 @@ export default function Login() {
     </div>
   );
 }
+
