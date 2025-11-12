@@ -1,0 +1,12 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+export default function CardDetail() {
+  return (
+    <main className="p-6">
+      <h2 className="text-xl font-semibold">Card Detail</h2>
+      <p className="mt-2">Detalle simplificado de carta (prueba).</p>
+      <Link to="/" className="underline mt-4 inline-block">Volver</Link>
+    </main>
+  );
+}

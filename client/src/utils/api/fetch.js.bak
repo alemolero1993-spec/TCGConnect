@@ -1,5 +1,5 @@
 ﻿// client/src/utils/api/fetch.js
-import { API_URL } from '../config';
+import { API_URL } from '../../config';
 
 export async function apiFetch(endpoint, options = {}) {
   const storedToken = localStorage.getItem('token') || localStorage.getItem('usuario') || import.meta.env.VITE_DEV_TOKEN || '';
@@ -28,4 +28,3 @@ export async function apiFetch(endpoint, options = {}) {
   }
   return resp.json();
 }
-

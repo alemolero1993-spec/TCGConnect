@@ -1,0 +1,12 @@
+import { getToken } from './utils/api/auth';
+import { API_URL } from './config';
+import React from 'react';
+export default function Home(){
+  return (
+    <div style={{padding:20}}>
+      <h1>Test Home â€” TCGConnect</h1>
+      <p>Si ves esto, el componente compila correctamente.</p>
+    </div>
+  );
+}
+

@@ -23,22 +23,13 @@
   ],
   "dev": [
     {
-      "id": "1762888174200",
-      "name": "pikachu",
-      "set": "GO",
-      "lang": "EN",
-      "rarity": "Common",
-      "value": 0.02,
-      "createdAt": "2025-11-11T19:09:34.200Z"
-    },
-    {
-      "id": "1762887535543",
+      "id": "1762888968192",
       "name": "pikachu",
       "set": "pokemon go",
       "lang": "EN",
-      "rarity": "Common",
-      "value": 0.01,
-      "createdAt": "2025-11-11T18:58:55.543Z"
+      "rarity": "Holo",
+      "value": 0.02,
+      "createdAt": "2025-11-11T19:22:48.192Z"
     }
   ]
 }

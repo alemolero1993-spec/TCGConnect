@@ -1,0 +1,19 @@
+// client/src/pages/Login.jsx
+import React from "react";
+import { Link } from "react-router-dom";
+
+export default function LoginPage() {
+  return (
+    <main style={{ padding: 30, fontFamily: "system-ui, sans-serif" }}>
+      <h1>Iniciar sesión</h1>
+      <form style={{ display: "grid", gap: 10, maxWidth: 300 }}>
+        <input placeholder="Usuario" />
+        <input type="password" placeholder="Contraseña" />
+        <button>Entrar</button>
+      </form>
+      <p style={{ marginTop: 10 }}>
+        ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+      </p>
+    </main>
+  );
+}

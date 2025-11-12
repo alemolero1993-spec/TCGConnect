@@ -28,7 +28,7 @@ export default function CookieBanner() {
         <div className="flex-1">
           <h4 className="font-semibold">Preferencias de cookies</h4>
           <p className="text-sm text-gray-600">
-            Usamos cookies para mejorar tu experiencia y para analítica. Puedes aceptar todas o solo las esenciales.
+            Usamos cookies para mejorar tu experiencia y para analÃƒÂ­tica. Puedes aceptar todas o solo las esenciales.
           </p>
         </div>
         <div className="flex items-center gap-2">

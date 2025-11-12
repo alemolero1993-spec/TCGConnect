@@ -6,11 +6,11 @@ export default function Footer() {
     <footer className="bg-white border-t mt-6 p-4 text-sm text-gray-600">
       <div className="max-w-5xl mx-auto flex justify-between items-center">
         <div>
-          © {new Date().getFullYear()} TCGConnect. Todos los derechos reservados.
+          Ã‚Â© {new Date().getFullYear()} TCGConnect. Todos los derechos reservados.
         </div>
         <div className="flex gap-4 items-center">
           <Link to="/privacy-policy" className="underline">
-            Política de Privacidad
+            PolÃƒÂ­tica de Privacidad
           </Link>
           <a
             href="#"

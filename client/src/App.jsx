@@ -1,32 +1,23 @@
-import React from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Dashboard from "./pages/Dashboard"
-import Home from "./pages/Home"
-import CardDetail from "./pages/CardDetail"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
-import PrivacyPage from "./pages/PrivacyPage"
-import CookieBanner from "./components/CookieBanner"
-import Footer from "./components/Footer"
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Layout from "./components/Layout";
+import HomePageMock from "./pages/Home";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
+import CollectionPage from "./pages/Collection";
 
-export default function App(){
+export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/card/:id" element={<CardDetail />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/privacy-policy" element={<PrivacyPage />} />
-          </Routes>
-        </div>
-        <Footer />
-        <CookieBanner />
-      </div>
-    </BrowserRouter>
-  )
+    <Router>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<HomePageMock />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/collection" element={<CollectionPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
+  );
 }
-
