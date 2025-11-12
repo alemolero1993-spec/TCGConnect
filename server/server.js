@@ -16,10 +16,12 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || true }))
 app.use('/api/auth', authRoutes)
 app.use('/api/collection', collectionRoutes)
 app.use('/api/collections', collectionRoutes)
+app.use('/api/collections', collectionRoutes)
 app.use('/api/mock', mockPrices)
 
 app.get('/api/health', (req, res) => res.json({ ok: true, ts: Date.now() }))
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`))
+
 
 
