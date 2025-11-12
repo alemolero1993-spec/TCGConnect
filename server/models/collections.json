@@ -1,44 +1,11 @@
-{
-  "1762865095667": [
-    {
-      "id": "1762865433752",
-      "name": "New Card",
-      "set": "S1",
-      "lang": "EN",
-      "rarity": "Rare",
-      "value": 10,
-      "createdAt": "2025-11-11T12:50:33.752Z"
-    }
-  ],
-  "alemo": [
-    {
-      "id": "1762870099062",
-      "name": "Charizard V",
-      "set": "Scarlet & Violet",
-      "lang": "EN",
-      "rarity": "Rare Holo",
-      "value": 150,
-      "createdAt": "2025-11-11T14:08:19.062Z"
-    }
-  ],
-  "dev": [
-    {
-      "id": "1762888174200",
-      "name": "pikachu",
-      "set": "GO",
-      "lang": "EN",
-      "rarity": "Common",
-      "value": 0.02,
-      "createdAt": "2025-11-11T19:09:34.200Z"
-    },
-    {
-      "id": "1762887535543",
-      "name": "pikachu",
-      "set": "pokemon go",
-      "lang": "EN",
-      "rarity": "Common",
-      "value": 0.01,
-      "createdAt": "2025-11-11T18:58:55.543Z"
-    }
-  ]
+﻿{
+    "id":  "col-test-1",
+    "user_id":  "alemo-test-001",
+    "name":  "Prueba - Carta Pikachu",
+    "language":  "",
+    "rarity":  "",
+    "condition":  "",
+    "value":  null,
+    "created_at":  "2025-11-12T17:07:02.876Z",
+    "raw":  "{\"user_id\":\"alemo-test-001\",\"cards\":[{\"rarity\":\"Rare\",\"name\":\"Pikachu\",\"id\":\"card-pikachu-1\",\"value\":10,\"set\":\"S1\"}],\"name\":\"Prueba - Carta Pikachu\",\"id\":\"col-test-1\",\"createdAt\":\"2025-11-12T18:07:03.0853771+01:00\"}"
 }
