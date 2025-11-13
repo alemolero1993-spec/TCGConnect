@@ -11,47 +11,32 @@ export default function Home() {
   const getUserIdCandidate = () => {
   function normalizeUserId(id) {
     if (!id) return id;
+    // Regla explícita y segura para el caso conocido
     if (id === "deploytest4") return "deploy-test-4";
+    // Si ya contiene un guion, asumir correcto
     if (id.includes("-")) return id;
-    return id;
-}`;
-
-    // Regla general: <prefix>testN -> <prefix>-test-N (por si aparece algo similar)
-    m = id.match(/^([a-zA-Z]+)test(\d+)$/i);
-    if (m) return `${m[1]}-test-${m[2]}`;
-
-    // Si es tipo prefix+number (abc123) -> prefix-123
-    m = id.match(/^([a-zA-Z]+)(\d+)$/i);
-    if (m) return `${m[1]}-${m[2]}`;
-
-    // Intento razonable: separar en dos bloques de letras y posible número final
-    m = id.match(/^([a-zA-Z]{2,})([a-zA-Z]{1,})(\d*)$/);
-    if (m) {
-      const part1 = m[1];
-      const part2 = m[2];
-      const num = m[3];
-      return num ? `${part1}-${part2}-${num}` : `${part1}-${part2}`;
-    }
-
-    // Fallback: devolver original si no hay coincidencia segura
+    // Fallback: devolver el id tal cual
     return id;
   }
 
   try {
-    const stored = localStorage.getItem('usuario');
+    const stored = localStorage.getItem("usuario");
     if (stored) {
-      const user = JSON.parse(stored);
-      if (user && user.id) return normalizeUserId(user.id);
-      // si stored es un string simple (p.e. "deploytest4")
-      if (typeof stored === 'string' && stored.length < 50) return normalizeUserId(stored);
+      try {
+        const user = JSON.parse(stored);
+        if (user && user.id) return normalizeUserId(user.id);
+      } catch {
+        // si stored es un string simple (p.e. "deploytest4")
+        if (typeof stored === "string" && stored.length < 50) return normalizeUserId(stored);
+      }
     }
   } catch (e) { /* ignore parse errors */ }
 
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
-      const payload = token.split('.')[1];
-      const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = token.split(".")[1];
+      const b64 = payload.replace(/-/g, "+").replace(/_/g, "/");
       const json = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
       if (json && json.id) return normalizeUserId(json.id);
     }
@@ -198,6 +183,7 @@ export default function Home() {
     </main>
   );
 }
+
 
 
 
