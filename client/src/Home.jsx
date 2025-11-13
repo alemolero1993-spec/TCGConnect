@@ -11,11 +11,10 @@ export default function Home() {
   const getUserIdCandidate = () => {
   function normalizeUserId(id) {
     if (!id) return id;
-    if (id.includes('-')) return id;
-
-    // Regla específica: deploytest4 -> deploy-test-4
-    let m = id.match(/^deploytest(\d+)$/i);
-    if (m) return `deploy-test-${m[1]}`;
+    if (id === "deploytest4") return "deploy-test-4";
+    if (id.includes("-")) return id;
+    return id;
+}`;
 
     // Regla general: <prefix>testN -> <prefix>-test-N (por si aparece algo similar)
     m = id.match(/^([a-zA-Z]+)test(\d+)$/i);
@@ -199,6 +198,7 @@ export default function Home() {
     </main>
   );
 }
+
 
 
 
