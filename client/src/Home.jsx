@@ -54,7 +54,7 @@ export default function Home() {
       }
 
       try {
-        const data = await apiFetch(`collection?userId=${encodeURIComponent(userId)}`);
+        const data = await apiFetch(`collection?user_id=${encodeURIComponent(userId)}`);
         const cols = data.collections || [];
 
         if (!mounted) return;
@@ -161,3 +161,4 @@ export default function Home() {
     </main>
   );
 }
+
