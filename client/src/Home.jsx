@@ -12,9 +12,29 @@ export default function Home() {
   function normalizeUserId(id) {
     if (!id) return id;
     if (id.includes('-')) return id;
-    // Heurística: dividir en 2 palabras + número final (deploytest4 -> deploy-test-4)
-    const match = id.match(/([a-zA-Z]+)([a-zA-Z]+)(\d+)$/);
-    if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+
+    // Regla específica: deploytest4 -> deploy-test-4
+    let m = id.match(/^deploytest(\d+)$/i);
+    if (m) return `deploy-test-${m[1]}`;
+
+    // Regla general: <prefix>testN -> <prefix>-test-N (por si aparece algo similar)
+    m = id.match(/^([a-zA-Z]+)test(\d+)$/i);
+    if (m) return `${m[1]}-test-${m[2]}`;
+
+    // Si es tipo prefix+number (abc123) -> prefix-123
+    m = id.match(/^([a-zA-Z]+)(\d+)$/i);
+    if (m) return `${m[1]}-${m[2]}`;
+
+    // Intento razonable: separar en dos bloques de letras y posible número final
+    m = id.match(/^([a-zA-Z]{2,})([a-zA-Z]{1,})(\d*)$/);
+    if (m) {
+      const part1 = m[1];
+      const part2 = m[2];
+      const num = m[3];
+      return num ? `${part1}-${part2}-${num}` : `${part1}-${part2}`;
+    }
+
+    // Fallback: devolver original si no hay coincidencia segura
     return id;
   }
 
@@ -23,6 +43,8 @@ export default function Home() {
     if (stored) {
       const user = JSON.parse(stored);
       if (user && user.id) return normalizeUserId(user.id);
+      // si stored es un string simple (p.e. "deploytest4")
+      if (typeof stored === 'string' && stored.length < 50) return normalizeUserId(stored);
     }
   } catch (e) { /* ignore parse errors */ }
 
@@ -30,7 +52,6 @@ export default function Home() {
     const token = localStorage.getItem('token');
     if (token) {
       const payload = token.split('.')[1];
-      // atob, safe base64 decode
       const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
       const json = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
       if (json && json.id) return normalizeUserId(json.id);
@@ -178,6 +199,7 @@ export default function Home() {
     </main>
   );
 }
+
 
 
 
