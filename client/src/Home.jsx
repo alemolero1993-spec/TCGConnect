@@ -2,6 +2,39 @@
 import { apiFetch } from "./utils/api/fetch";
 
 export default function Home() {
+
+  // === NUEVA COLECCIÓN ===
+  const [newCollectionName, setNewCollectionName] = useState("");
+
+  const createCollection = async () => {
+    try {
+      const userId = getUserIdCandidate();
+      if (!userId) {
+        alert("No se detectó userId.");
+        return;
+      }
+
+      if (!newCollectionName.trim()) {
+        alert("El nombre no puede estar vacío.");
+        return;
+      }
+
+      const resp = await apiFetch("collection", {
+        method: "POST",
+        body: JSON.stringify({
+          user_id: userId,
+          name: newCollectionName.trim()
+        })
+      });
+
+      console.log("Creación de colección:", resp);
+
+      setNewCollectionName("");
+      window.location.reload();
+    } catch (err) {
+      alert("Error creando colección: " + err.message);
+    }
+  };
   const [collections, setCollections] = useState([]);
   const [cards, setCards] = useState([]);
   const [userDisplay, setUserDisplay] = useState(null);
@@ -125,6 +158,22 @@ export default function Home() {
 
       <section style={{ marginTop: 16 }}>
         <h4>Mis colecciones</h4>
+
+        <div style={{ marginBottom: 12, marginTop: 12 }}>
+          <input
+            type="text"
+            placeholder="Nombre nueva colección"
+            value={newCollectionName}
+            onChange={(e) => setNewCollectionName(e.target.value)}
+            style={{ padding: "8px", width: "220px", marginRight: "8px" }}
+          />
+          <button
+            onClick={createCollection}
+            style={{ padding: "8px 12px", cursor: "pointer" }}
+          >
+            Crear colección
+          </button>
+        </div>
         {loading ? (
           <p>Cargando colecciones…</p>
         ) : collections.length ? (
@@ -183,6 +232,8 @@ export default function Home() {
     </main>
   );
 }
+
+
 
 
 
