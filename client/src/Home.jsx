@@ -9,19 +9,36 @@ export default function Home() {
   const [error, setError] = useState("");
 
   const getUserIdCandidate = () => {
-    try {
-      const raw = localStorage.getItem("usuario") || "";
-      if (!raw) return "";
-      try {
-        const parsed = JSON.parse(raw);
-        return parsed.id || parsed.email || parsed.name || "";
-      } catch {
-        return raw || "";
-      }
-    } catch {
-      return "";
+  function normalizeUserId(id) {
+    if (!id) return id;
+    if (id.includes('-')) return id;
+    // Heurística: dividir en 2 palabras + número final (deploytest4 -> deploy-test-4)
+    const match = id.match(/([a-zA-Z]+)([a-zA-Z]+)(\d+)$/);
+    if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+    return id;
+  }
+
+  try {
+    const stored = localStorage.getItem('usuario');
+    if (stored) {
+      const user = JSON.parse(stored);
+      if (user && user.id) return normalizeUserId(user.id);
     }
-  };
+  } catch (e) { /* ignore parse errors */ }
+
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = token.split('.')[1];
+      // atob, safe base64 decode
+      const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const json = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+      if (json && json.id) return normalizeUserId(json.id);
+    }
+  } catch (e) { /* ignore token errors */ }
+
+  return null;
+};
 
   useEffect(() => {
     let mounted = true;
@@ -161,5 +178,6 @@ export default function Home() {
     </main>
   );
 }
+
 
 
