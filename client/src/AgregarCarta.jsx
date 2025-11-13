@@ -55,11 +55,12 @@ export default function AgregarCarta() {
     }
 
     try {
-      const payload = {
-        collection_id: collectionId,
-        ...form,
-        value: form.value ? parseFloat(form.value) : null,
-      };
+    const payload = {
+      collection_id: collectionId,
+      ...form,
+      id: form.id || `card-${Date.now()}`,
+      value: form.value ? parseFloat(form.value) : null,
+    };
 
       const resp = await apiFetch(`collection/${encodeURIComponent(collectionId)}/cards`, {
         method: "POST",
@@ -112,4 +113,5 @@ export default function AgregarCarta() {
     </main>
   );
 }
+
 
