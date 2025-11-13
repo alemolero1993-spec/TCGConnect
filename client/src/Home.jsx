@@ -42,7 +42,6 @@ export default function Home() {
   const [error, setError] = useState("");
 const deleteCollection = async (id) => {
   try {
-                <button onClick={() => { const newName = window.prompt("Nuevo nombre de la colección:", c.name); if(!newName) return; renameCollection(c.id, newName); }} style={{ padding: "4px 8px", marginTop: "6px", marginRight: "6px", background: "#0078ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Renombrar</button>
     if (!window.confirm("¿Seguro que quieres eliminar esta colección? Esta acción no se puede deshacer.")) {
       return;
     }
@@ -218,6 +217,7 @@ const deleteCollection = async (id) => {
                 {c.language ? ` — ${c.language}` : ""} {c.rarity ? ` — ${c.rarity}` : ""}
                 <div style={{ fontSize: 12, color: "#666" }}>{c.id}</div>
                 <button 
+                <button onClick={() => { const newName = window.prompt("Nuevo nombre de la colección:", c.name); if(!newName) return; renameCollection(c.id, newName); }} style={{ padding: "4px 8px", marginTop: "6px", marginRight: "6px", background: "#0078ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Renombrar</button>
                   onClick={() => deleteCollection(c.id)} 
                   style={{
                     padding: '4px 8px',
