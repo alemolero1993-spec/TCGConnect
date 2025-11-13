@@ -27,7 +27,7 @@ export default function AgregarCarta() {
       }
 
       try {
-        const resp = await apiFetch(collection?userId=);
+        const resp = await apiFetch(`collection?userId=${encodeURIComponent(userId)}`);
         const col = resp.collections && resp.collections.length > 0 ? resp.collections[0] : null;
         if (!col) {
           setMsg("No tienes colecciones aún.");
