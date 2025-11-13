@@ -40,6 +40,24 @@ export default function Home() {
   const [userDisplay, setUserDisplay] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+const deleteCollection = async (id) => {
+  try {
+    if (!window.confirm("¿Seguro que quieres eliminar esta colección? Esta acción no se puede deshacer.")) {
+      return;
+    }
+
+    const resp = await apiFetch(\collection/\\, {
+      method: "DELETE"
+    });
+
+    console.log("Colección eliminada:", resp);
+
+    // Recargar la página
+    window.location.reload();
+  } catch (err) {
+    alert("Error eliminando colección: " + err.message);
+  }
+};
 
   const getUserIdCandidate = () => {
   function normalizeUserId(id) {
@@ -174,6 +192,21 @@ export default function Home() {
             Crear colección
           </button>
         </div>
+                <button 
+                  onClick={() => deleteCollection(c.id)} 
+                  style={{
+                    padding: '4px 8px',
+                    marginTop: '6px',
+                    background: '#cc0000',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Eliminar
+                </button>
         {loading ? (
           <p>Cargando colecciones…</p>
         ) : collections.length ? (
@@ -183,6 +216,51 @@ export default function Home() {
                 <strong>{c.name || "(sin nombre)"}</strong>
                 {c.language ? ` — ${c.language}` : ""} {c.rarity ? ` — ${c.rarity}` : ""}
                 <div style={{ fontSize: 12, color: "#666" }}>{c.id}</div>
+                <button 
+                  onClick={() => deleteCollection(c.id)} 
+                  style={{
+                    padding: '4px 8px',
+                    marginTop: '6px',
+                    background: '#cc0000',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Eliminar
+                </button>
+                <div style={{ marginTop: 4 }}>
+                  <a 
+                    href={"/coleccion/" + c.id} 
+                    style={{
+                      padding: "4px 8px",
+                      background: "#0078ff",
+                      color: "white",
+                      borderRadius: "4px",
+                      textDecoration: "none",
+                      fontSize: "12px"
+                    }}
+                  >
+                    Ver detalles
+                  </a>
+                </div>
+                <button 
+                  onClick={() => deleteCollection(c.id)} 
+                  style={{
+                    padding: '4px 8px',
+                    marginTop: '6px',
+                    background: '#cc0000',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Eliminar
+                </button>
               </li>
             ))}
           </ul>
@@ -191,47 +269,13 @@ export default function Home() {
         )}
       </section>
 
-      <section style={{ marginTop: 24 }}>
-        <h4>Cartas (primera colección)</h4>
-        {loading ? (
-          <p>Cargando cartas…</p>
-        ) : cards && cards.length ? (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 700 }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid #ddd" }}>
-                  <th style={{ padding: "8px 12px" }}>ID</th>
-                  <th style={{ padding: "8px 12px" }}>Nombre</th>
-                  <th style={{ padding: "8px 12px" }}>Set</th>
-                  <th style={{ padding: "8px 12px" }}>Idioma</th>
-                  <th style={{ padding: "8px 12px" }}>Rareza</th>
-                  <th style={{ padding: "8px 12px" }}>Valor</th>
-                  <th style={{ padding: "8px 12px" }}>Fecha</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {cards.map((c) => (
-                  <tr key={c.id || Math.random()} style={{ borderBottom: "1px solid #eee" }}>
-                    <td style={{ padding: "8px 12px" }}>{c.id || "-"}</td>
-                    <td style={{ padding: "8px 12px" }}>{c.name || "-"}</td>
-                    <td style={{ padding: "8px 12px" }}>{c.set || "-"}</td>
-                    <td style={{ padding: "8px 12px" }}>{c.lang || "-"}</td>
-                    <td style={{ padding: "8px 12px" }}>{c.rarity || "-"}</td>
-                    <td style={{ padding: "8px 12px" }}>{c.value ?? "-"}</td>
-                    <td style={{ padding: "8px 12px" }}>{c.createdAt || c.created_at || "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p>No hay cartas en la primera colección.</p>
-        )}
-      </section>
+      
     </main>
   );
 }
+
+
+
 
 
 
