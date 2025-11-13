@@ -11,7 +11,7 @@ export default function CollectionDetail() {
   useEffect(() => {
     const loadCards = async () => {
       try {
-        const resp = await const resp = await apiFetch(`collection/${encodeURIComponent(id)}/cards`);
+        const resp = await apiFetch(`collection/${encodeURIComponent(id)}/cards`);
         setCards(resp.cards || []);
       } catch (err) {
         setError(err.message || "Error cargando cartas.");
