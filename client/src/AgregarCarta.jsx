@@ -61,7 +61,7 @@ export default function AgregarCarta() {
         value: form.value ? parseFloat(form.value) : null,
       };
 
-      const resp = await apiFetch("card", {
+      const resp = await apiFetch(`collection/${encodeURIComponent(collectionId)}/cards`, {
         method: "POST",
         body: JSON.stringify(payload)
       });
@@ -112,3 +112,4 @@ export default function AgregarCarta() {
     </main>
   );
 }
+
