@@ -46,7 +46,7 @@ const deleteCollection = async (id) => {
       return;
     }
 
-    const resp = await apiFetch(\collection/\\, {
+    const resp = await apiFetch(`collection/${id}`, {
       method: "DELETE"
     });
 
