@@ -193,7 +193,6 @@ const deleteCollection = async (id) => {
           </button>
         </div>
                 <button 
-                  onClick={() => deleteCollection(c.id)} 
                   style={{
                     padding: '4px 8px',
                     marginTop: '6px',
@@ -217,7 +216,7 @@ const deleteCollection = async (id) => {
                 {c.language ? ` — ${c.language}` : ""} {c.rarity ? ` — ${c.rarity}` : ""}
                 <div style={{ fontSize: 12, color: "#666" }}>{c.id}</div>
                 <button onClick={() => { const newName = window.prompt("Nuevo nombre de la colección:", c.name); if(!newName) return; renameCollection(c.id, newName); }} style={{ padding: "4px 8px", marginTop: "6px", marginRight: "6px", background: "#0078ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Renombrar</button>
-                  onClick={() => deleteCollection(c.id)} 
+                <button onClick={() => deleteCollection(c.id)} style={{ padding: "4px 8px", marginTop: "6px", background: "#cc0000", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Eliminar</button>
                   style={{
                     padding: '4px 8px',
                     marginTop: '6px',
@@ -247,7 +246,6 @@ const deleteCollection = async (id) => {
                   </a>
                 </div>
                 <button 
-                  onClick={() => deleteCollection(c.id)} 
                   style={{
                     padding: '4px 8px',
                     marginTop: '6px',
