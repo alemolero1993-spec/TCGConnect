@@ -192,7 +192,22 @@ const deleteCollection = async (id) => {
             Crear colección
           </button>
         </div>
-                {loading ? (
+                <button 
+                  onClick={() => deleteCollection(c.id)} 
+                  style={{
+                    padding: '4px 8px',
+                    marginTop: '6px',
+                    background: '#cc0000',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Eliminar
+                </button>
+        {loading ? (
           <p>Cargando colecciones…</p>
         ) : collections.length ? (
           <ul>
@@ -201,7 +216,8 @@ const deleteCollection = async (id) => {
                 <strong>{c.name || "(sin nombre)"}</strong>
                 {c.language ? ` — ${c.language}` : ""} {c.rarity ? ` — ${c.rarity}` : ""}
                 <div style={{ fontSize: 12, color: "#666" }}>{c.id}</div>
-                <div\ style=\{\{\ fontSize:\ 12,\ color:\ "\#666"\ }}>\{c\.id}</div>\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <button\ onClick=\{\(\)\ =>\ \{\ const\ newName\ =\ window\.prompt\("Nuevo\ nombre\ de\ la\ colección:",\ c\.name\);\ if\(!newName\)\ return;\ renameCollection\(c\.id,\ newName\);\ }}\ style=\{\{\ padding:\ "4px\ 8px",\ marginTop:\ "6px",\ marginRight:\ "6px",\ background:\ "\#0078ff",\ color:\ "white",\ border:\ "none",\ borderRadius:\ "4px",\ cursor:\ "pointer",\ fontSize:\ "12px"\ }}>Renombrar</button>\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <button\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ onClick=\{\(\)\ =>\ deleteCollection\(c\.id\)}\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ style=\{\{\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ padding:\ '4px\ 8px',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ marginTop:\ '6px',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ background:\ '\#cc0000',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ color:\ 'white',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ border:\ 'none',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ borderRadius:\ '4px',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cursor:\ 'pointer',\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fontSize:\ '12px'\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }}\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ >\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Eliminar\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ </button>
+                <button 
+                <button onClick={() => { const newName = window.prompt("Nuevo nombre de la colección:", c.name); if(!newName) return; renameCollection(c.id, newName); }} style={{ padding: "4px 8px", marginTop: "6px", marginRight: "6px", background: "#0078ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Renombrar</button>
                   onClick={() => deleteCollection(c.id)} 
                   style={{
                     padding: '4px 8px',
@@ -258,7 +274,6 @@ const deleteCollection = async (id) => {
     </main>
   );
 }
-
 
 
 
