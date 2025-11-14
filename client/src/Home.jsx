@@ -216,7 +216,6 @@ const deleteCollection = async (id) => {
                 <strong>{c.name || "(sin nombre)"}</strong>
                 {c.language ? ` — ${c.language}` : ""} {c.rarity ? ` — ${c.rarity}` : ""}
                 <div style={{ fontSize: 12, color: "#666" }}>{c.id}</div>
-                <button 
                 <button onClick={() => { const newName = window.prompt("Nuevo nombre de la colección:", c.name); if(!newName) return; renameCollection(c.id, newName); }} style={{ padding: "4px 8px", marginTop: "6px", marginRight: "6px", background: "#0078ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Renombrar</button>
                   onClick={() => deleteCollection(c.id)} 
                   style={{
@@ -274,6 +273,7 @@ const deleteCollection = async (id) => {
     </main>
   );
 }
+
 
 
 
